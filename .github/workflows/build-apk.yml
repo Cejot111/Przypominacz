@@ -44,7 +44,8 @@ jobs:
       - name: Utworz zgloszenie z logiem bledu
         if: failure()
         run: |
-          gh issue create --title "Gradle Build Failure" --body "$(tail -n 80 gradle_output.txt)" || true
+          grep -E "(e: |Compilation error|Unresolved)" gradle_output.txt | head -n 40 > error_summary.txt
+          gh issue create --title "Kotlin Compiler Errors" --body-file error_summary.txt || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
