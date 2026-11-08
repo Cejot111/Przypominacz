@@ -30,21 +30,11 @@ jobs:
 
       - name: Build APK (Release & Debug)
         run: |
-          set -o pipefail
           if [ -d "android" ]; then
-            echo "Wykryto podkatalog android - przejscie..."
+            echo "Wykryto podkatalog android - przejscie do niego..."
             cd android
           fi
-          chmod +x gradlew 2>/dev/null || true
-          gradle assembleRelease --stacktrace 2>&1 | tee ../gradle_output.txt
-
-      - name: Upload build log if failed
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gradle-build-log
-          path: gradle_output.txt
-          if-no-files-found: ignore
+          gradle assembleRelease --stacktrace
 
       - name: Znajdz wygenerowany plik APK
         id: find_apk

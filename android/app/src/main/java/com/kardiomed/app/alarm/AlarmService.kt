@@ -132,8 +132,8 @@ class AlarmService : Service() {
             .setAutoCancel(false)
             .setFullScreenIntent(fullScreenPendingIntent, true)
             .setContentIntent(fullScreenPendingIntent)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Wyłącz", dismissPendingIntent)
-            .addAction(android.R.drawable.ic_popup_sync, "Drzemka (10 min)", snoozePendingIntent)
+            .addAction(android.R.drawable.ic_menu_delete, "Wyłącz", dismissPendingIntent)
+            .addAction(android.R.drawable.ic_menu_rotate, "Drzemka (10 min)", snoozePendingIntent)
             .build()
 
         startForeground(NOTIFICATION_ID, notification)
