@@ -105,7 +105,7 @@ class AlarmActivity : ComponentActivity() {
                         putExtra("NAVIGATE_TO", "NOTES_PRESSURE")
                         putExtra("TARGET_NOTE_ID", targetNoteId)
                         putExtra("AUTO_ADD_ROW", true)
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     }
                     startActivity(mainIntent)
                     finish()

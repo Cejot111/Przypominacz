@@ -82,7 +82,7 @@ class AlarmService : Service() {
             putExtra(AlarmScheduler.EXTRA_CUSTOM_SOUND_URI, customUri)
             putExtra(AlarmScheduler.EXTRA_VIBRATE, vibrate)
             putExtra(AlarmScheduler.EXTRA_TARGET_NOTE_ID, targetNoteId)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
 
         val fullScreenPendingIntent = PendingIntent.getActivity(
