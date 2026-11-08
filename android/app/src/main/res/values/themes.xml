@@ -4,7 +4,7 @@
         <item name="android:navigationBarColor">#0F172A</item>
     </style>
 
-    <style name="Theme.KardioMed.Alarm" parent="android:Theme.Material.NoActionBar.Fullscreen">
+    <style name="Theme.KardioMed.Alarm" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">#0F172A</item>
         <item name="android:navigationBarColor">#0F172A</item>
     </style>

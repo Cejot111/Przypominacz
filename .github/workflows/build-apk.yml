@@ -12,10 +12,6 @@ jobs:
     name: Build APK
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-      issues: write
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -36,18 +32,19 @@ jobs:
         run: |
           set -o pipefail
           if [ -d "android" ]; then
+            echo "Wykryto podkatalog android - przejscie..."
             cd android
           fi
           chmod +x gradlew 2>/dev/null || true
           gradle assembleRelease --stacktrace 2>&1 | tee ../gradle_output.txt
 
-      - name: Utworz zgloszenie z logiem bledu
+      - name: Upload build log if failed
         if: failure()
-        run: |
-          tail -n 120 gradle_output.txt > error_summary.txt 2>/dev/null || true
-          gh issue create --title "Gradle Build Failure Log" --body-file error_summary.txt || true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-log
+          path: gradle_output.txt
+          if-no-files-found: ignore
 
       - name: Znajdz wygenerowany plik APK
         id: find_apk
@@ -63,19 +60,3 @@ jobs:
           path: ${{ steps.find_apk.outputs.apk_path }}
           if-no-files-found: error
           retention-days: 30
-
-      - name: Utworz GitHub Release z plikiem APK
-        uses: softprops/action-gh-release@v1
-        if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-        with:
-          tag_name: v1.0.0
-          name: KardioMed v1.0.0 - Pobierz aplikacje na Androida
-          body: |
-            ### KardioMed - Notatnik, Pomiary Ciśnienia i Głośne Alarmy
-            - Głośne alarmy budzika (zwykłe i cykliczne) z wyborem dźwięku i wibracjami
-            - Notatnik z inteligentną tabelą ciśnień (autouzupełnianie schematu Rano / Wieczór)
-            - Check-lista zakupów aptecznych i notatki tekstowe
-            - Eksport i udostępnianie raportu do lekarza
-          files: ${{ steps.find_apk.outputs.apk_path }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
