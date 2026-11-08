@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Alarm
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Notes
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -165,13 +163,13 @@ fun MainAppRoot(
                     NavigationBarItem(
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
-                        icon = { Icon(Icons.Default.Notes, contentDescription = "Notes") },
+                        icon = { Icon(Icons.Default.Description, contentDescription = "Notes") },
                         label = { Text("Notes") }
                     )
                     NavigationBarItem(
                         selected = selectedTab == 2,
                         onClick = { selectedTab = 2 },
-                        icon = { Icon(Icons.Default.BarChart, contentDescription = "Statystyki") },
+                        icon = { Icon(Icons.Default.DateRange, contentDescription = "Statystyki") },
                         label = { Text("Statystyki") }
                     )
                 }

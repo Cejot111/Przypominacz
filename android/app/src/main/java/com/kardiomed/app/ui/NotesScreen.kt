@@ -17,13 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Notes
-import androidx.compose.material.icons.filled.TableChart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -92,7 +86,7 @@ fun NotesScreen(
                 ) {
                     DropdownMenuItem(
                         text = { Text("Tabela ciśnień (ze schematem)") },
-                        leadingIcon = { Icon(Icons.Default.TableChart, contentDescription = null, tint = Color(0xFFEF4444)) },
+                        leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = null, tint = Color(0xFFEF4444)) },
                         onClick = {
                             showCreateMenu = false
                             newNoteTitle = "Pomiary ciśnienia"
@@ -101,7 +95,7 @@ fun NotesScreen(
                     )
                     DropdownMenuItem(
                         text = { Text("Lista zakupów / zadań (check-lista)") },
-                        leadingIcon = { Icon(Icons.Default.Checklist, contentDescription = null, tint = Color(0xFF0D9488)) },
+                        leadingIcon = { Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF0D9488)) },
                         onClick = {
                             showCreateMenu = false
                             newNoteTitle = "Lista zakupów aptecznych"
@@ -167,7 +161,7 @@ fun NotesScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            Icons.Default.Notes,
+                            Icons.Default.Description,
                             contentDescription = null,
                             tint = Color.Gray,
                             modifier = Modifier.size(64.dp)
@@ -277,7 +271,7 @@ fun NoteCard(
 
     val icon = when (note.type) {
         NoteType.PRESSURE_TABLE -> Icons.Default.Favorite
-        NoteType.CHECKLIST -> Icons.Default.Checklist
+        NoteType.CHECKLIST -> Icons.Default.Check
         NoteType.PLAIN_TEXT -> Icons.Default.Description
     }
 

@@ -28,18 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Alarm
-import androidx.compose.material.icons.filled.AlarmOn
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.GraphicEq
-import androidx.compose.material.icons.filled.Medication
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -137,7 +126,7 @@ fun AlarmsScreen(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
-                                Icons.Default.AlarmOn,
+                                Icons.Default.Notifications,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(24.dp)
@@ -174,7 +163,7 @@ fun AlarmsScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            Icons.Default.Alarm,
+                            Icons.Default.Notifications,
                             contentDescription = null,
                             tint = Color.Gray,
                             modifier = Modifier.size(64.dp)
@@ -264,7 +253,7 @@ fun AlarmCard(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            imageVector = if (isPressure) Icons.Default.Favorite else if (isMeds) Icons.Default.Medication else Icons.Default.Alarm,
+                            imageVector = if (isPressure) Icons.Default.Favorite else Icons.Default.Notifications,
                             contentDescription = null,
                             tint = if (alarm.isEnabled) typeColor else Color.Gray,
                             modifier = Modifier.size(24.dp)
@@ -324,7 +313,7 @@ fun AlarmCard(
                     // Nazwa dźwięku
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Default.MusicNote,
+                            Icons.Default.Notifications,
                             contentDescription = null,
                             tint = Color.Gray,
                             modifier = Modifier.size(14.dp)
@@ -598,7 +587,7 @@ fun AlarmEditDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = if (isPreviewPlaying) Icons.Default.Stop else Icons.Default.GraphicEq,
+                        imageVector = if (isPreviewPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -615,7 +604,7 @@ fun AlarmEditDialog(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Vibration, contentDescription = null, tint = Color.Gray)
+                        Icon(Icons.Default.Notifications, contentDescription = null, tint = Color.Gray)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text("Wibracje przy alarmie")
                     }

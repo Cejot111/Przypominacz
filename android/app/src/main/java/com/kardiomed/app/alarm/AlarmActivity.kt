@@ -21,12 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Alarm
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Medication
-import androidx.compose.material.icons.filled.Snooze
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -173,7 +168,7 @@ fun AlarmScreen(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Icon(
-                                imageVector = if (isPressure) Icons.Default.Favorite else if (isMeds) Icons.Default.Medication else Icons.Default.Alarm,
+                                imageVector = if (isPressure) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(42.dp)
@@ -272,7 +267,7 @@ fun AlarmScreen(
                         .height(52.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Snooze,
+                        imageVector = Icons.Default.Refresh,
                         contentDescription = null,
                         tint = Color(0xFFCBD5E1),
                         modifier = Modifier.size(20.dp)
