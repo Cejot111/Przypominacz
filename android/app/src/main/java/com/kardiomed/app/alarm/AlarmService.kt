@@ -122,7 +122,7 @@ class AlarmService : Service() {
         )
 
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .setSmallIcon(android.R.drawable.stat_sys_upload)
             .setContentTitle("ALARM: $title")
             .setContentText("Dotknij, aby otworzyć aplikację lub wyłącz poniżej")
             .setPriority(NotificationCompat.PRIORITY_MAX)
