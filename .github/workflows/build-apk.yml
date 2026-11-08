@@ -37,7 +37,29 @@ jobs:
             echo "Wykryto podkatalog android - przejscie..."
             cd android
           fi
-          gradle assembleRelease --stacktrace --no-daemon
+          gradle assembleRelease --stacktrace --no-daemon 2>&1 | tee gradle-build.log
+
+      - name: Raport bledu w podsumowaniu
+        if: failure()
+        run: |
+          echo "## Gradle Build Failure" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          if [ -f "android/gradle-build.log" ]; then
+            tail -n 100 android/gradle-build.log >> $GITHUB_STEP_SUMMARY
+          elif [ -f "gradle-build.log" ]; then
+            tail -n 100 gradle-build.log >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Udostepnij logi jako Artifact w razie bledu
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-failure-log
+          path: |
+            android/gradle-build.log
+            gradle-build.log
+          if-no-files-found: ignore
 
       - name: Znajdz i przygotuj plik APK
         id: find_apk
