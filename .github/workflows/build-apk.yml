@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build KardioMed APK
+    name: Build APK
     runs-on: ubuntu-latest
 
     permissions:
@@ -37,38 +37,15 @@ jobs:
             echo "Wykryto podkatalog android - przejscie..."
             cd android
           fi
-          gradle assembleRelease --stacktrace --no-daemon 2>&1 | tee gradle-build.log
+          chmod +x gradlew 2>/dev/null || true
+          gradle assembleRelease --stacktrace
 
-      - name: Raport bledu w podsumowaniu
-        if: failure()
-        run: |
-          echo "## Gradle Build Failure" >> $GITHUB_STEP_SUMMARY
-          echo '```text' >> $GITHUB_STEP_SUMMARY
-          if [ -f "android/gradle-build.log" ]; then
-            tail -n 100 android/gradle-build.log >> $GITHUB_STEP_SUMMARY
-          elif [ -f "gradle-build.log" ]; then
-            tail -n 100 gradle-build.log >> $GITHUB_STEP_SUMMARY
-          fi
-          echo '```' >> $GITHUB_STEP_SUMMARY
-
-      - name: Udostepnij logi jako Artifact w razie bledu
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gradle-failure-log
-          path: |
-            android/gradle-build.log
-            gradle-build.log
-          if-no-files-found: ignore
-
-      - name: Znajdz i przygotuj plik APK
+      - name: Znajdz wygenerowany plik APK
         id: find_apk
         run: |
-          APK_FOUND=$(find . -name "*.apk" -not -path "*/intermediates/*" | head -n 1)
-          echo "Znaleziony APK: $APK_FOUND"
-          mkdir -p dist
-          cp "$APK_FOUND" dist/KardioMed-v1.0.0.apk
-          echo "apk_path=dist/KardioMed-v1.0.0.apk" >> $GITHUB_OUTPUT
+          APK_PATH=$(find . -name "*.apk" -not -path "*/intermediates/*" | head -n 1)
+          echo "Znaleziony APK: $APK_PATH"
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
 
       - name: Udostepnij APK jako Artifact w GitHub Actions
         uses: actions/upload-artifact@v4
@@ -78,9 +55,9 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      - name: Utworz GitHub Release z gotowym plikiem APK
+      - name: Utworz GitHub Release z plikiem APK
         uses: softprops/action-gh-release@v1
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         with:
           tag_name: v1.0.0
           name: KardioMed v1.0.0 - Pobierz aplikacje na Androida
@@ -90,8 +67,6 @@ jobs:
             - Notatnik z inteligentną tabelą ciśnień (autouzupełnianie schematu Rano / Wieczór)
             - Check-lista zakupów aptecznych i notatki tekstowe
             - Eksport i udostępnianie raportu do lekarza
-            
-            Pobierz poniższy plik **KardioMed-v1.0.0.apk** i zainstaluj na telefonie!
           files: ${{ steps.find_apk.outputs.apk_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
