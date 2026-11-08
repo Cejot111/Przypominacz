@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KardioMed</string>
-    <string name="channel_alarm_name">Głośne Alarmy Medyczne</string>
-    <string name="channel_alarm_desc">Powiadomienia o pomiarze ciśnienia i zażyciu leków z dźwiękiem budzika</string>
+    <string name="app_name">Przypominacz</string>
+    <string name="channel_alarm_name">Głośne Alarmy i Zadania ADHD</string>
+    <string name="channel_alarm_desc">Głośne budziki, przypomnienia o lekach, ciśnieniu, praniu, piekarniku i zadaniach</string>
 </resources>

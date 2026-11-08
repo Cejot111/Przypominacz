@@ -5,6 +5,8 @@ import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,11 +34,14 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -496,12 +501,119 @@ fun ChecklistContent(
 ) {
     var newItemText by remember { mutableStateOf("") }
     val items = note.checklistItems
+    val totalCount = items.size
+    val doneCount = items.count { it.isDone }
+    val progress = if (totalCount > 0) doneCount.toFloat() / totalCount else 0f
+
+    val groceryTags = listOf(
+        "🛒" to "Spożywcze",
+        "🥖" to "Pieczywo",
+        "🥛" to "Nabiał",
+        "🍎" to "Warzywa",
+        "🧼" to "Chemia",
+        "💊" to "Apteka",
+        "⚡" to "Pilne"
+    )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        // Pasek postępu ADHD (Dopamina za odhaczanie)
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(14.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (totalCount == 0) "Lista jest pusta" else "Kupiono / Zrobiono: $doneCount z $totalCount",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "${(progress * 100).toInt()}%",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = Color(0xFF10B981)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LinearProgressIndicator(
+                    progress = progress,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp),
+                    color = Color(0xFF10B981),
+                    trackColor = Color(0xFFCBD5E1)
+                )
+
+                // Przyciski akcji zbiorczych dla ADHD
+                if (totalCount > 0) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = {
+                                val reset = items.map { it.copy(isDone = false) }
+                                onItemsChanged(reset)
+                            }
+                        ) {
+                            Text("Odznacz wszystkie", fontSize = 12.sp)
+                        }
+
+                        if (doneCount > 0) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            TextButton(
+                                onClick = {
+                                    val remaining = items.filterNot { it.isDone }
+                                    onItemsChanged(remaining)
+                                }
+                            ) {
+                                Text("Usuń kupione", fontSize = 12.sp, color = Color(0xFFEF4444))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Szybkie tagi kategorii zakupów do sklepu
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            groceryTags.forEach { (emoji, label) ->
+                SuggestionChip(
+                    onClick = {
+                        val prefix = "$emoji "
+                        if (!newItemText.startsWith(prefix)) {
+                            newItemText = prefix + newItemText.trimStart()
+                        }
+                    },
+                    label = { Text("$emoji $label", fontSize = 12.sp) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Pole dodawania nowej pozycji
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -509,7 +621,7 @@ fun ChecklistContent(
             OutlinedTextField(
                 value = newItemText,
                 onValueChange = { newItemText = it },
-                label = { Text("Nowa pozycja na liście zakupów...") },
+                label = { Text("Dodaj pozycję (np. Mleko, Chleb)...") },
                 singleLine = true,
                 modifier = Modifier.weight(1f)
             )
@@ -528,8 +640,9 @@ fun ChecklistContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
+        // Lista pozycji
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             itemsIndexed(items, key = { _, item -> item.id }) { index, item ->
                 Card(
@@ -569,6 +682,9 @@ fun ChecklistContent(
                         }
                     }
                 }
+            }
+            item {
+                Spacer(modifier = Modifier.height(60.dp))
             }
         }
     }

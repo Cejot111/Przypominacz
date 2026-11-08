@@ -125,7 +125,7 @@ fun MainAppRoot(
             val target = if (!initialTargetNoteId.isNullOrEmpty()) {
                 notes.firstOrNull { it.id == initialTargetNoteId }
             } else {
-                notes.firstOrNull { it.type == NoteType.PRESSURE_TABLE }
+                notes.firstOrNull { it.type == NoteType.PRESSURE_TABLE } ?: notes.firstOrNull()
             }
             if (target != null) {
                 selectedTab = 1
@@ -157,20 +157,20 @@ fun MainAppRoot(
                     NavigationBarItem(
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
-                        icon = { Icon(Icons.Default.Alarm, contentDescription = "Alarmy") },
-                        label = { Text("Alarmy") }
+                        icon = { Icon(Icons.Default.Notifications, contentDescription = "Alarmy") },
+                        label = { Text("Alarmy & Timery") }
                     )
                     NavigationBarItem(
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
-                        icon = { Icon(Icons.Default.Description, contentDescription = "Notes") },
-                        label = { Text("Notes") }
+                        icon = { Icon(Icons.Default.Check, contentDescription = "Listy & Notatki") },
+                        label = { Text("Listy & Notatki") }
                     )
                     NavigationBarItem(
                         selected = selectedTab == 2,
                         onClick = { selectedTab = 2 },
-                        icon = { Icon(Icons.Default.DateRange, contentDescription = "Statystyki") },
-                        label = { Text("Statystyki") }
+                        icon = { Icon(Icons.Default.DateRange, contentDescription = "Pomiary") },
+                        label = { Text("Pomiary ciśnienia") }
                     )
                 }
             }

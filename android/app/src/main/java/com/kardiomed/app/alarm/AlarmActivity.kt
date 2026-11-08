@@ -138,8 +138,17 @@ fun AlarmScreen(
 
     val isPressure = typeName == AlarmType.PRESSURE.name
     val isMeds = typeName == AlarmType.MEDICATION.name
+    val isShopping = typeName == AlarmType.SHOPPING.name
+    val isTimer = typeName == AlarmType.TIMER.name
 
-    val accentColor = if (isPressure) Color(0xFFEF4444) else if (isMeds) Color(0xFF0D9488) else Color(0xFF6366F1)
+    val accentColor = when (typeName) {
+        AlarmType.PRESSURE.name -> Color(0xFFEF4444)
+        AlarmType.MEDICATION.name -> Color(0xFF0D9488)
+        AlarmType.SHOPPING.name -> Color(0xFF10B981)
+        AlarmType.TIMER.name -> Color(0xFFF59E0B)
+        AlarmType.WATER.name -> Color(0xFF06B6D4)
+        else -> Color(0xFF6366F1)
+    }
 
     Box(
         modifier = Modifier
@@ -207,7 +216,14 @@ fun AlarmScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = if (isPressure) "POMIAR CIŚNIENIA" else if (isMeds) "LEKI" else "PRZYPOMNIENIE",
+                        text = when (typeName) {
+                            AlarmType.PRESSURE.name -> "POMIAR CIŚNIENIA"
+                            AlarmType.MEDICATION.name -> "LEKI / WITAMINY"
+                            AlarmType.SHOPPING.name -> "ZAKUPY / SKLEP"
+                            AlarmType.TIMER.name -> "MINUTNIK / KUCHNIA"
+                            AlarmType.WATER.name -> "WODA / NAWODNIENIE"
+                            else -> "PRZYPOMNIENIE ADHD"
+                        },
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = accentColor,
@@ -228,7 +244,7 @@ fun AlarmScreen(
 
             Spacer(modifier = Modifier.height(36.dp))
 
-            // GŁÓWNA AKCJA: Zapisz pomiar / Oznacz wzięcie leku
+            // GŁÓWNA AKCJA: Zapisz pomiar / Otwórz listę / Oznacz zadanie
             Button(
                 onClick = onOpenNotes,
                 shape = RoundedCornerShape(16.dp),
@@ -245,7 +261,7 @@ fun AlarmScreen(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = if (isPressure) "Zapisz pomiar w tabeli" else "Otwórz notes / Oznacz",
+                    text = if (isPressure) "Zapisz pomiar w tabeli" else if (isShopping) "Otwórz listę zakupów" else "Otwórz notatkę / Zrobione",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White

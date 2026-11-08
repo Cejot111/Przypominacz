@@ -11,8 +11,12 @@ enum class NoteType {
 }
 
 enum class AlarmType(val labelPl: String) {
-    PRESSURE("Pomiar ciśnienia"),
+    ADHD_TASK("Zadanie / Rutyna"),
+    TIMER("Szybki minutnik / Kuchnia"),
+    SHOPPING("Lista do sklepu"),
+    WATER("Wypij wodę"),
     MEDICATION("Zażycie leków"),
+    PRESSURE("Pomiar ciśnienia"),
     CUSTOM("Własne przypomnienie")
 }
 

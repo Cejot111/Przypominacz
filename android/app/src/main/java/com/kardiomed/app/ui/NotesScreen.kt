@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kardiomed.app.model.ChecklistItem
 import com.kardiomed.app.model.Note
 import com.kardiomed.app.model.NoteType
 import com.kardiomed.app.util.PressurePatternEngine
@@ -85,7 +86,25 @@ fun NotesScreen(
                     onDismissRequest = { showCreateMenu = false }
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Tabela ciśnień (ze schematem)") },
+                        text = { Text("🛒 Lista do sklepu (Spożywcze)") },
+                        leadingIcon = { Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF10B981)) },
+                        onClick = {
+                            showCreateMenu = false
+                            newNoteTitle = "Lista do sklepu"
+                            createTypeDialog = NoteType.CHECKLIST
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("🔑 Przed wyjściem z domu (ADHD)") },
+                        leadingIcon = { Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFF59E0B)) },
+                        onClick = {
+                            showCreateMenu = false
+                            newNoteTitle = "Przed wyjściem z domu"
+                            createTypeDialog = NoteType.CHECKLIST
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("📊 Tabela pomiarów (ze schematem)") },
                         leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = null, tint = Color(0xFFEF4444)) },
                         onClick = {
                             showCreateMenu = false
@@ -94,16 +113,16 @@ fun NotesScreen(
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Lista zakupów / zadań (check-lista)") },
-                        leadingIcon = { Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF0D9488)) },
+                        text = { Text("🧠 Zrzut myśli (Brain Dump ADHD)") },
+                        leadingIcon = { Icon(Icons.Default.Notifications, contentDescription = null, tint = Color(0xFF8B5CF6)) },
                         onClick = {
                             showCreateMenu = false
-                            newNoteTitle = "Lista zakupów aptecznych"
-                            createTypeDialog = NoteType.CHECKLIST
+                            newNoteTitle = "Zrzut myśli (Brain Dump)"
+                            createTypeDialog = NoteType.PLAIN_TEXT
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Czysta notatka tekstowa") },
+                        text = { Text("📝 Czysta notatka tekstowa") },
                         leadingIcon = { Icon(Icons.Default.Description, contentDescription = null, tint = Color(0xFF6366F1)) },
                         onClick = {
                             showCreateMenu = false
@@ -238,10 +257,28 @@ fun NotesScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        val initialItems = when {
+                            targetType == NoteType.CHECKLIST && newNoteTitle.contains("sklep", ignoreCase = true) -> listOf(
+                                ChecklistItem(text = "🛒 Chleb / pieczywo"),
+                                ChecklistItem(text = "🥛 Mleko"),
+                                ChecklistItem(text = "🥚 Jajka"),
+                                ChecklistItem(text = "☕ Kawa"),
+                                ChecklistItem(text = "🍎 Owoce")
+                            )
+                            targetType == NoteType.CHECKLIST && newNoteTitle.contains("wyjściem", ignoreCase = true) -> listOf(
+                                ChecklistItem(text = "🔑 Klucze od domu"),
+                                ChecklistItem(text = "💳 Portfel / dokumenty"),
+                                ChecklistItem(text = "📱 Telefon naładowany"),
+                                ChecklistItem(text = "💧 Butelka z wodą"),
+                                ChecklistItem(text = "🔌 Wyłączona kuchenka i żelazko")
+                            )
+                            else -> emptyList()
+                        }
                         val newNote = Note(
                             id = UUID.randomUUID().toString(),
                             title = newNoteTitle.ifBlank { "Nowa notatka" },
-                            type = targetType
+                            type = targetType,
+                            checklistItems = initialItems
                         )
                         onCreateNote(newNote)
                         createTypeDialog = null
@@ -379,11 +416,30 @@ fun NoteCard(
                 NoteType.CHECKLIST -> {
                     val total = note.checklistItems.size
                     val done = note.checklistItems.count { it.isDone }
-                    Text(
-                        text = "Ukończono: $done z $total pozycji",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    val percent = if (total > 0) (done * 100 / total) else 0
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Kupiono / Zrobiono: $done z $total",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = if (done == total && total > 0) Color(0xFF10B981).copy(alpha = 0.15f) else Color(0xFF6366F1).copy(alpha = 0.12f)
+                        ) {
+                            Text(
+                                text = "$percent%",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (done == total && total > 0) Color(0xFF10B981) else Color(0xFF6366F1),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                            )
+                        }
+                    }
                 }
 
                 NoteType.PLAIN_TEXT -> {

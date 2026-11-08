@@ -147,6 +147,33 @@ class AppRepository private constructor(private val context: Context) {
         cal.add(Calendar.DAY_OF_YEAR, -1)
         val yesterday = df.format(cal.time)
 
+        val shoppingNote = Note(
+            id = "default_shopping_list",
+            title = "Lista do sklepu (Spożywcze & Dom)",
+            type = NoteType.CHECKLIST,
+            checklistItems = listOf(
+                ChecklistItem(text = "🛒 Chleb żytni / pieczywo", isDone = false),
+                ChecklistItem(text = "🥛 Mleko owsiane lub krowie", isDone = true),
+                ChecklistItem(text = "🥚 Jajka (10 szt.)", isDone = false),
+                ChecklistItem(text = "☕ Kawa ziarnista / mielona", isDone = false),
+                ChecklistItem(text = "🍎 Jabłka / banany", isDone = false),
+                ChecklistItem(text = "🧼 Kapsułki do prania / papier", isDone = false)
+            )
+        )
+
+        val adhdChecklist = Note(
+            id = "default_adhd_leaving",
+            title = "Przed wyjściem z domu (Checklista ADHD)",
+            type = NoteType.CHECKLIST,
+            checklistItems = listOf(
+                ChecklistItem(text = "🔑 Klucze do mieszkania i auta", isDone = false),
+                ChecklistItem(text = "💳 Portfel / dokumenty / karta", isDone = false),
+                ChecklistItem(text = "📱 Telefon naładowany", isDone = false),
+                ChecklistItem(text = "💧 Butelka z wodą", isDone = false),
+                ChecklistItem(text = "🔌 Wyłączona kuchenka, piekarnik i żelazko", isDone = false)
+            )
+        )
+
         val pressureNote = Note(
             id = "default_pressure_log",
             title = "Dziennik pomiarów ciśnienia i pulsu",
@@ -158,33 +185,21 @@ class AppRepository private constructor(private val context: Context) {
             )
         )
 
-        val checklistNote = Note(
-            id = "default_shopping_list",
-            title = "Lista zakupów aptecznych",
-            type = NoteType.CHECKLIST,
-            checklistItems = listOf(
-                ChecklistItem(text = "Leki na ciśnienie (recepta)", isDone = false),
-                ChecklistItem(text = "Magnez z witaminą B6", isDone = false),
-                ChecklistItem(text = "Paski do glukometru", isDone = true),
-                ChecklistItem(text = "Baterie AAA do ciśnieniomierza", isDone = false)
-            )
-        )
-
-        val adviceNote = Note(
-            id = "default_plain_advice",
-            title = "Zalecenia lekarza i zasady pomiaru",
+        val brainDumpNote = Note(
+            id = "default_brain_dump",
+            title = "Zrzut myśli (Brain Dump ADHD)",
             type = NoteType.PLAIN_TEXT,
-            textContent = "1. Mierzyć ciśnienie po co najmniej 5 minutach odpoczynku w pozycji siedzącej.\n2. Ręka oparta na stole, mankiet na wysokości serca.\n3. Przed pomiarem unikać kawy, papierosów i wysiłku fizycznego przez 30 minut.\n4. Zapisywać pomiary rano przed posiłkiem oraz wieczorem przed kolacją/snem."
+            textContent = "Szybkie zapiski zanim uciekną z głowy:\n- Zadzwonić do spółdzielni / mechanika w czwartek\n- Wymienić żarówkę w korytarzu\n- Zasada 5 minut: jeśli zadanie trwa mniej niż 5 minut, zrób je od razu!"
         )
 
-        return listOf(pressureNote, checklistNote, adviceNote)
+        return listOf(shoppingNote, adhdChecklist, pressureNote, brainDumpNote)
     }
 
     private fun createInitialAlarms(): List<AlarmItem> {
         return listOf(
             AlarmItem(
                 id = "alarm_morning_pressure",
-                title = "Poranny pomiar ciśnienia",
+                title = "Poranny pomiar ciśnienia + witaminy",
                 type = AlarmType.PRESSURE,
                 hour = 8,
                 minute = 0,
@@ -196,15 +211,27 @@ class AppRepository private constructor(private val context: Context) {
                 targetNoteId = "default_pressure_log"
             ),
             AlarmItem(
-                id = "alarm_evening_pressure_meds",
-                title = "Wieczorny pomiar + leki",
-                type = AlarmType.PRESSURE,
-                hour = 20,
-                minute = 0,
+                id = "alarm_water_pomodoro",
+                title = "Wypij szklankę wody + ruch",
+                type = AlarmType.WATER,
+                hour = 12,
+                minute = 30,
                 daysOfWeek = (1..7).toSet(),
                 isEnabled = true,
                 isRecurring = true,
-                soundPreset = SoundPresets.MEDICAL_BEEP,
+                soundPreset = SoundPresets.GENTLE_CHIME,
+                vibrate = true
+            ),
+            AlarmItem(
+                id = "alarm_evening_pressure_meds",
+                title = "Wieczorny pomiar + wyciszenie",
+                type = AlarmType.PRESSURE,
+                hour = 20,
+                minute = 30,
+                daysOfWeek = (1..7).toSet(),
+                isEnabled = true,
+                isRecurring = true,
+                soundPreset = SoundPresets.DIGITAL_WAKE,
                 vibrate = true,
                 targetNoteId = "default_pressure_log"
             )

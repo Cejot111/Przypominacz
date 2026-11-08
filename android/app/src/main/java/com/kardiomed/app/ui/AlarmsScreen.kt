@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -71,6 +73,7 @@ import com.kardiomed.app.model.Note
 import com.kardiomed.app.model.NoteType
 import com.kardiomed.app.model.SoundPresets
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import java.util.UUID
 
 @Composable
@@ -138,7 +141,7 @@ fun AlarmsScreen(
 
                     Column {
                         Text(
-                            text = "Głośne alarmy medyczne",
+                            text = "Głośne Alarmy & Organizer ADHD",
                             fontWeight = FontWeight.Bold,
                             fontSize = 15.sp,
                             color = MaterialTheme.colorScheme.onSurface
@@ -152,7 +155,49 @@ fun AlarmsScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Pasek Szybkich Minutników ADHD (Pomoc przy time-blindness)
+            Text(
+                text = "⚡ Szybki minutnik na teraz:",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf(
+                    Triple("+15 min", "Wyłącz piekarnik / kuchenkę", 15),
+                    Triple("+30 min", "Wyjmij pranie z pralki", 30),
+                    Triple("+45 min", "Przerwa od pracy / Pomodoro", 45),
+                    Triple("+1 godz.", "Wypij wodę i zrób przerwę", 60),
+                    Triple("+2 godz.", "Wyjdź na spotkanie / zakupy", 120)
+                ).forEach { (chipLabel, defaultTitle, mins) ->
+                    SuggestionChip(
+                        onClick = {
+                            val cal = Calendar.getInstance()
+                            cal.add(Calendar.MINUTE, mins)
+                            editingAlarm = AlarmItem(
+                                title = defaultTitle,
+                                type = AlarmType.TIMER,
+                                hour = cal.get(Calendar.HOUR_OF_DAY),
+                                minute = cal.get(Calendar.MINUTE),
+                                isRecurring = false,
+                                isEnabled = true
+                            )
+                            showDialog = true
+                        },
+                        label = { Text(chipLabel, fontWeight = FontWeight.SemiBold) }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
 
             if (alarms.isEmpty()) {
                 Box(
@@ -210,7 +255,7 @@ fun AlarmsScreen(
     if (showDialog) {
         AlarmEditDialog(
             alarmToEdit = editingAlarm,
-            availableNotes = notes.filter { it.type == NoteType.PRESSURE_TABLE },
+            availableNotes = notes,
             onDismiss = { showDialog = false },
             onSave = { savedAlarm ->
                 onSaveAlarm(savedAlarm)
@@ -228,9 +273,15 @@ fun AlarmCard(
     onDelete: () -> Unit,
     onTest: () -> Unit
 ) {
-    val isPressure = alarm.type == AlarmType.PRESSURE
-    val isMeds = alarm.type == AlarmType.MEDICATION
-    val typeColor = if (isPressure) Color(0xFFEF4444) else if (isMeds) Color(0xFF0D9488) else Color(0xFF6366F1)
+    val (typeColor, iconVector) = when (alarm.type) {
+        AlarmType.PRESSURE -> Color(0xFFEF4444) to Icons.Default.Favorite
+        AlarmType.MEDICATION -> Color(0xFF0D9488) to Icons.Default.Star
+        AlarmType.TIMER -> Color(0xFFF59E0B) to Icons.Default.Notifications
+        AlarmType.SHOPPING -> Color(0xFF10B981) to Icons.Default.Check
+        AlarmType.WATER -> Color(0xFF06B6D4) to Icons.Default.PlayArrow
+        AlarmType.ADHD_TASK -> Color(0xFF6366F1) to Icons.Default.Check
+        AlarmType.CUSTOM -> Color(0xFF8B5CF6) to Icons.Default.Notifications
+    }
 
     Card(
         shape = RoundedCornerShape(18.dp),
@@ -253,7 +304,7 @@ fun AlarmCard(
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
-                            imageVector = if (isPressure) Icons.Default.Favorite else Icons.Default.Notifications,
+                            imageVector = iconVector,
                             contentDescription = null,
                             tint = if (alarm.isEnabled) typeColor else Color.Gray,
                             modifier = Modifier.size(24.dp)
@@ -417,6 +468,70 @@ fun AlarmEditDialog(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
+                // Gotowe szablony ADHD
+                Text("⚡ Gotowe szablony ADHD:", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(
+                        "🍕 Piekarnik (+20m)" to {
+                            title = "Wyłącz piekarnik / kuchenkę"
+                            type = AlarmType.TIMER
+                            val cal = Calendar.getInstance().apply { add(Calendar.MINUTE, 20) }
+                            hour = cal.get(Calendar.HOUR_OF_DAY)
+                            minute = cal.get(Calendar.MINUTE)
+                            isRecurring = false
+                        },
+                        "🧺 Pralka (+45m)" to {
+                            title = "Wyjmij pranie z pralki"
+                            type = AlarmType.TIMER
+                            val cal = Calendar.getInstance().apply { add(Calendar.MINUTE, 45) }
+                            hour = cal.get(Calendar.HOUR_OF_DAY)
+                            minute = cal.get(Calendar.MINUTE)
+                            isRecurring = false
+                        },
+                        "💧 Woda (+1h)" to {
+                            title = "Wypij szklankę wody"
+                            type = AlarmType.WATER
+                            val cal = Calendar.getInstance().apply { add(Calendar.MINUTE, 60) }
+                            hour = cal.get(Calendar.HOUR_OF_DAY)
+                            minute = cal.get(Calendar.MINUTE)
+                            isRecurring = false
+                        },
+                        "🔑 Wyjście z domu" to {
+                            title = "Przed wyjściem: klucze, portfel, kuchenka"
+                            type = AlarmType.ADHD_TASK
+                            isRecurring = true
+                        },
+                        "🛒 Lista do sklepu" to {
+                            title = "Idź do sklepu (sprawdź listę zakupów)"
+                            type = AlarmType.SHOPPING
+                            isRecurring = false
+                        },
+                        "💊 Leki / Witaminy" to {
+                            title = "Zażyj leki i witaminy"
+                            type = AlarmType.MEDICATION
+                            isRecurring = true
+                        },
+                        "❤️ Ciśnienie i puls" to {
+                            title = "Pomiar ciśnienia i pulsu"
+                            type = AlarmType.PRESSURE
+                            isRecurring = true
+                        }
+                    ).forEach { (presetLabel, action) ->
+                        SuggestionChip(
+                            onClick = { action() },
+                            label = { Text(presetLabel, fontSize = 11.sp) }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 // Tytuł
                 OutlinedTextField(
                     value = title,
@@ -431,7 +546,9 @@ fun AlarmEditDialog(
                 // Typ przypomnienia
                 Text("Typ powiadomienia:", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     AlarmType.values().forEach { t ->
@@ -587,7 +704,7 @@ fun AlarmEditDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = if (isPreviewPlaying) Icons.Default.Stop else Icons.Default.PlayArrow,
+                        imageVector = if (isPreviewPlaying) Icons.Default.Close else Icons.Default.PlayArrow,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -609,6 +726,32 @@ fun AlarmEditDialog(
                         Text("Wibracje przy alarmie")
                     }
                     Switch(checked = vibrate, onCheckedChange = { vibrate = it })
+                }
+
+                // Powiązanie z notatką / listą
+                if (availableNotes.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Text("Otwórz po wyłączeniu alarmu (opcjonalnie):", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        FilterChip(
+                            selected = targetNoteId == null,
+                            onClick = { targetNoteId = null },
+                            label = { Text("Brak") }
+                        )
+                        availableNotes.forEach { n ->
+                            FilterChip(
+                                selected = targetNoteId == n.id,
+                                onClick = { targetNoteId = n.id },
+                                label = { Text(n.title, maxLines = 1) }
+                            )
+                        }
+                    }
                 }
             }
         },
