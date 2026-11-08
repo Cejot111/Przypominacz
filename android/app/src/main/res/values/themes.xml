@@ -7,8 +7,5 @@
     <style name="Theme.KardioMed.Alarm" parent="android:Theme.Material.NoActionBar.Fullscreen">
         <item name="android:statusBarColor">#0F172A</item>
         <item name="android:navigationBarColor">#0F172A</item>
-        <item name="android:windowBackground">#0F172A</item>
-        <item name="android:windowShowWhenLocked">true</item>
-        <item name="android:windowTurnScreenOn">true</item>
     </style>
 </resources>
