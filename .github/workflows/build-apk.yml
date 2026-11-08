@@ -29,6 +29,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: '8.4'
+          cache-disabled: true
 
       - name: Build APK (Release & Debug)
         run: |
@@ -36,7 +37,7 @@ jobs:
             echo "Wykryto podkatalog android - przejscie..."
             cd android
           fi
-          gradle assembleRelease --stacktrace
+          gradle assembleRelease --stacktrace --no-daemon
 
       - name: Znajdz i przygotuj plik APK
         id: find_apk

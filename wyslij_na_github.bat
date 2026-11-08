@@ -15,8 +15,8 @@ echo   2. Wpisz nazwe: kardiomed
 echo   3. Pozostaw Publiczne i kliknij [Create repository]
 echo.
 echo ====================================================================
-set /p REPONAME="Podaj nazwe repozytorium na Twoim GitHubie [domyslnie: kardiomed]: "
-if "%REPONAME%"=="" set REPONAME=kardiomed
+set /p REPONAME="Podaj nazwe repozytorium na Twoim GitHubie [domyslnie: przypominacz]: "
+if "%REPONAME%"=="" set REPONAME=przypominacz
 
 set REPO_URL=https://github.com/Cejot111/%REPONAME%.git
 echo.

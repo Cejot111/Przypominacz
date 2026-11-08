@@ -192,7 +192,7 @@ fun StatsScreen(notes: List<Note>) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     LinearProgressIndicator(
-                        progress = { optimalPercent },
+                        progress = optimalPercent,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(10.dp),
